@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyber-Snake // Retro-Neon Arcade</title>
+    <!-- Google Fonts for premium cyberpunk typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Floating background grid & particle container -->
+    <div class="cyber-bg">
+        <div class="grid-overlay"></div>
+        <div class="scanlines"></div>
+    </div>
+
+    <!-- Main Game Wrapper -->
+    <div class="game-wrapper">
+        <header class="game-header">
+            <h1 class="logo">CYBER<span>SNAKE</span></h1>
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <span class="stat-label">SCORE</span>
+                    <span id="current-score" class="stat-val">0000</span>
+                </div>
+                <div class="stat-box glow-cyan">
+                    <span class="stat-label">HIGH</span>
+                    <span id="high-score" class="stat-val">0000</span>
+                </div>
+            </div>
+            <button id="sound-toggle" class="icon-btn" aria-label="Toggle Sound">
+                <svg id="sound-on-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+                </svg>
+                <svg id="sound-off-icon" viewBox="0 0 24 24" width="24" height="24" class="hidden">
+                    <path fill="currentColor" d="M12,4L9.91,6.09L12,8.18M19,12C19,11.11 18.84,10.26 18.55,9.47L20.07,7.95C20.67,9.17 21,10.55 21,12C21,16.28 18,19.86 14,20.77V18.71C16.89,17.85 19,15.17 19,12M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18 14.84,18.36 14,18.54V20.6C15.39,20.39 16.68,19.79 17.78,18.9L20.73,21.85L22,20.58M14,3.23V5.29C14.87,5.55 15.68,6 16.39,6.6L14.88,8.11C14.61,7.94 14.31,7.81 14,7.72V9.89L16.03,11.92C16.32,10.82 16.5,9.66 16.5,8.5C16.5,6.73 15.5,5.21 14,4.47V3.23Z"/>
+                </svg>
+            </button>
+        </header>
+
+        <main class="game-container">
+            <!-- Dynamic Canvas Screen -->
+            <div class="canvas-container">
+                <canvas id="game-canvas" width="600" height="600"></canvas>
+                
+                <!-- Start Menu Overlay -->
+                <div id="start-menu" class="overlay">
+                    <div class="overlay-content">
+                        <h2>SYSTEM INITIALIZED</h2>
+                        <p class="subtitle">SELECT YOUR SPECIFICATIONS</p>
+                        
+                        <div class="settings-grid">
+                            <!-- Speed Settings -->
+                            <div class="setting-group">
+                                <h3>GRID SPEED</h3>
+                                <div class="radio-toggle" id="speed-selector">
+                                    <button class="toggle-btn" data-speed="8">EASY</button>
+                                    <button class="toggle-btn active" data-speed="12">MEDIUM</button>
+                                    <button class="toggle-btn" data-speed="16">HARD</button>
+                                </div>
+                            </div>
+
+                            <!-- Border Mode -->
+                            <div class="setting-group">
+                                <h3>BORDER INTEGRITY</h3>
+                                <div class="radio-toggle" id="mode-selector">
+                                    <button class="toggle-btn active" data-mode="wrap">CASUAL (WRAP)</button>
+                                    <button class="toggle-btn" data-mode="solid">SOLID (DEATH)</button>
+                                </div>
+                            </div>
+
+                            <!-- Skin Selector -->
+                            <div class="setting-group wide">
+                                <h3>SNAKE DESIGN</h3>
+                                <div class="skin-selector" id="skin-selector">
+                                    <div class="skin-option active" data-skin="cyan" style="--skin-color: #00f0ff;">
+                                        <div class="skin-preview"></div>
+                                        <span>CYAN</span>
+                                    </div>
+                                    <div class="skin-option" data-skin="green" style="--skin-color: #39ff14;">
+                                        <div class="skin-preview"></div>
+                                        <span>NEON</span>
+                                    </div>
+                                    <div class="skin-option" data-skin="magenta" style="--skin-color: #ff007f;">
+                                        <div class="skin-preview"></div>
+                                        <span>MAGENTA</span>
+                                    </div>
+                                    <div class="skin-option" data-skin="gold" style="--skin-color: #ffd700;">
+                                        <div class="skin-preview"></div>
+                                        <span>AURUM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="start-btn" class="primary-btn pulse">START SIMULATION</button>
+                    </div>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div id="game-over-screen" class="overlay hidden">
+                    <div class="overlay-content">
+                        <h2 class="neon-text-red">SYSTEM CORRUPTED</h2>
+                        <p class="subtitle">SESSION TERMINATED</p>
+
+                        <div class="end-stats">
+                            <div class="end-stat-row">
+                                <span>SCORE OBTAINED:</span>
+                                <span id="final-score" class="end-stat-val text-cyan">0</span>
+                            </div>
+                            <div class="end-stat-row">
+                                <span>FOOD ABSORPTIONS:</span>
+                                <span id="final-food" class="end-stat-val text-green">0</span>
+                            </div>
+                            <div class="end-stat-row">
+                                <span>UPTIME ACTIVE:</span>
+                                <span id="final-time" class="end-stat-val text-magenta">0s</span>
+                            </div>
+                        </div>
+
+                        <div class="game-over-actions">
+                            <button id="restart-btn" class="primary-btn neon-btn-red pulse">REBOOT SESSION</button>
+                            <button id="exit-btn" class="primary-btn">EXIT TO MENU</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pause Screen Overlay -->
+                <div id="pause-screen" class="overlay hidden">
+                    <div class="overlay-content">
+                        <h2>SIMULATION PAUSED</h2>
+                        <p class="subtitle">PRESS ESC OR SPACE TO RESUME</p>
+                        <div class="pause-actions">
+                            <button id="resume-btn" class="primary-btn">RESUME</button>
+                            <button id="quit-btn" class="primary-btn neon-btn-red">QUIT TO MENU</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Virtual Controls for Touch Screens -->
+        <div class="mobile-controls">
+            <button id="btn-up" class="dpad-btn up" aria-label="Up">▲</button>
+            <div class="dpad-middle">
+                <button id="btn-left" class="dpad-btn left" aria-label="Left">◀</button>
+                <div class="dpad-center"></div>
+                <button id="btn-right" class="dpad-btn right" aria-label="Right">▶</button>
+            </div>
+            <button id="btn-down" class="dpad-btn down" aria-label="Down">▼</button>
+        </div>
+
+        <footer class="game-footer">
+            <p>CONTROLS: WASD / ARROWS TO NAVIGATE | SPACE OR ESC TO PAUSE</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
